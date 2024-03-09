@@ -9,9 +9,12 @@
 #import "NativeViewController.h"
 #import <Flutter/Flutter.h>
 #import <flutter_boost/FlutterBoost.h>
+#import <WebKit/Webkit.h>
 
 @interface NativeViewController ()
-@property(nonatomic, strong)FBFlutterViewContainer *flutterContainer;
+@property (nonatomic, strong) FBFlutterViewContainer *flutterContainer;
+@property (nonatomic, strong) WKWebView *baichuanWebView;
+@property (nonatomic) CGFloat flutterContainerViewOriginY;
 @end
 
 @implementation NativeViewController
@@ -19,7 +22,8 @@
 - (instancetype)init{
     if (self = [super init]) {
         _flutterContainer = [[FBFlutterViewContainer alloc]init];
-        [_flutterContainer setName:@"embedded" uniqueId:nil params:@{} opaque:YES];
+//        [_flutterContainer setName:@"embedded" uniqueId:nil params:@{} opaque:YES];
+        [_flutterContainer setName:@"showDialog" uniqueId:nil params:@{} opaque:YES];
     }
     return self;
 }
@@ -27,16 +31,46 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor grayColor];
-    self.flutterContainer.view.frame = CGRectInset(self.view.bounds, 30, 100);
+
+    CGFloat originX = 20;
+    CGFloat originY = 20 + 44 + 40;
+    CGFloat width = self.view.bounds.size.width - 2 * originX;
+    CGFloat flutterContainerHeight = 80;
+    CGFloat height = self.view.bounds.size.height - originY - flutterContainerHeight;
+    _baichuanWebView = [[WKWebView alloc] initWithFrame:CGRectMake(originX, originY, width, height)];
+    _baichuanWebView.inspectable = YES;
+    // 设置 Cookie
+    NSURL *url = [NSURL URLWithString:@"https://baiying-test.baichuan-ai.com"];
+    NSMutableDictionary *cookieProperties = [NSMutableDictionary dictionary];
+    [cookieProperties setObject:@"__bc_token__" forKey:NSHTTPCookieName];
+    [cookieProperties setObject:@"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.fd7b4d8b258667b3148bd1a3f62a9748309219bd904a2232ac73831d35cc2ae5f2e278dccc5f3188c1e42f2d0f133104ecf8f7cf7880634b8a67538a7922124ccf5a5e67380bb4b481aac3d9aa5d683345357b5e16403b147682c7f84aae8acd0e47368c1e18cb53ee91b2406307ef59251ec67d199e631da34e1ab88b5ba669.GzPsV5tZwYeSqe-Pj-Syh7_C_YYn6wT96EAi6Vv4SnI" forKey:NSHTTPCookieValue];
+    [cookieProperties setObject:@"unique_id" forKey:NSHTTPCookieName];
+    [cookieProperties setObject:@"WeI5o1E9" forKey:NSHTTPCookieValue];
+    [cookieProperties setObject:url.host forKey:NSHTTPCookieDomain];
+    [cookieProperties setObject:@"/" forKey:NSHTTPCookiePath];
+    [cookieProperties setObject:[NSDate dateWithTimeIntervalSinceNow:36000000000] forKey:NSHTTPCookieExpires];
+    NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieProperties];
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url]; //https://baiying-test.baichuan-ai.com，https://www.baidu.com
+    [_baichuanWebView loadRequest:request];
+    [self.view addSubview:_baichuanWebView];
+    
+    _flutterContainerViewOriginY = originY + height + 10;
+    height = flutterContainerHeight - 20;
+    self.flutterContainer.view.frame = CGRectMake(originX, _flutterContainerViewOriginY, width, height);
     [self.view addSubview:self.flutterContainer.view];
     [self addChildViewController:self.flutterContainer];
     
-    UIButton *nativeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    nativeButton.frame = CGRectMake(50,self.view.bounds.size.height-50,200,40);
-    nativeButton.backgroundColor = [UIColor blueColor];
-    [nativeButton setTitle:@"Button in Native" forState:UIControlStateNormal];
-    [nativeButton addTarget:self action:@selector(pushMe) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:nativeButton];
+    // 注册键盘通知
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(keyboardWillHide:)
+                                                     name:UIKeyboardWillHideNotification
+                                                   object:nil];
 }
 
 - (void)pushMe
@@ -70,6 +104,30 @@
 
 - (void)dealloc{
     NSLog(@"dealloc native controller%p", self.flutterContainer);
+    // 移除键盘通知
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    NSDictionary *info = [notification userInfo];
+    CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    CGFloat keyboardHeight = keyboardSize.height;
+    
+    CGRect frame = self.flutterContainer.view.frame;
+    frame.origin.y = _flutterContainerViewOriginY - keyboardHeight;
+    [self.flutterContainer.view setFrame:frame];
+    
+    NSLog(@"Keyboard will show. Height: %f", keyboardHeight);
+    // 在这里可以对键盘弹起进行处理，比如调整界面布局
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    CGRect frame = self.flutterContainer.view.frame;
+    frame.origin.y = _flutterContainerViewOriginY;
+    [self.flutterContainer.view setFrame:frame];
+    
+    NSLog(@"Keyboard will hide.");
+    // 在这里可以对键盘隐藏进行处理
 }
 
 @end

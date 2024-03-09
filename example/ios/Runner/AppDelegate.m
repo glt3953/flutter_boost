@@ -60,14 +60,18 @@
     nativeButton.backgroundColor = [UIColor redColor];
     [nativeButton setTitle:@"push native" forState:UIControlStateNormal];
     [nativeButton addTarget:self action:@selector(pushNative) forControlEvents:UIControlEventTouchUpInside];
-    [self.window addSubview:nativeButton];
+    [vc.view addSubview:nativeButton];
+//    [fvc.view addSubview:nativeButton];
+//    [self.window addSubview:nativeButton];
 
     UIButton *pushEmbeded = [UIButton buttonWithType:UIButtonTypeCustom];
     pushEmbeded.frame = CGRectMake(self.window.frame.size.width * 0.5 - 70, 150, 140, 40);
     pushEmbeded.backgroundColor = [UIColor redColor];
     [pushEmbeded setTitle:@"push embedded" forState:UIControlStateNormal];
     [pushEmbeded addTarget:self action:@selector(pushEmbeded) forControlEvents:UIControlEventTouchUpInside];
-    [self.window addSubview:pushEmbeded];
+    [vc.view addSubview:pushEmbeded];
+//    [fvc.view addSubview:pushEmbeded];
+//    [self.window addSubview:pushEmbeded];
 
 
     return YES;

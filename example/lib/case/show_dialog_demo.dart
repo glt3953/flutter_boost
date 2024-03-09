@@ -9,6 +9,35 @@ class ShowDialogDemo extends StatefulWidget {
 class _ShowDialogDemoState extends State<ShowDialogDemo> {
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        // appBar: AppBar(
+        //   title: Text('TextField Example'),
+        // ),
+        body: Center(
+          child: TextField(
+              // decoration: InputDecoration(
+              //   hintText: 'Flutter TextField',
+              // ),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFFF6F8FB),
+                hintText: 'Flutter TextField',
+                hintStyle: const TextStyle(
+                    fontSize: 16, color: Color(0x998588A9)),
+                floatingLabelBehavior:
+                FloatingLabelBehavior.never,
+                contentPadding: const EdgeInsets.fromLTRB(16, 6, 1, 6),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
+    );
+
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
