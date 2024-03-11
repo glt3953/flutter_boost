@@ -124,20 +124,21 @@
 }
 
 - (void)updateFlutterContainerHeight:(CGFloat)height {
-    // Update the height of the Flutter Container here
-    // You can adjust the height of the Flutter Container based on the received height
     CGRect frame = self.flutterContainer.view.frame;
     NSLog(@"start updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
     CGFloat spaceY = height - frame.size.height;
     frame.origin.y -= spaceY;
     _flutterContainerViewOriginY = frame.origin.y;
     frame.size.height += spaceY;
-    NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
-    [self.flutterContainer.view setFrame:frame];
-//    [self.flutterContainer.view mas_updateConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_lessThanOrEqualTo(100);
-//        make.height.mas_equalTo(height);
-//    }];
+//    [self.flutterContainer.view setFrame:frame];
+//    NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
+    [UIView animateWithDuration:0.15 animations:^{
+        // 在动画块中更新视图的 frame 属性
+        self.flutterContainer.view.frame = frame;
+    } completion:^(BOOL finished) {
+        // 动画完成时可以执行一些操作
+        NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
+    }];
 }
 
 - (void)pushMe
