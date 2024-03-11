@@ -9,15 +9,34 @@ class ShowDialogDemo extends StatefulWidget {
 class _ShowDialogDemoState extends State<ShowDialogDemo> {
   @override
   final GlobalKey _scaffoldKey = GlobalKey();
+  final GlobalKey _containerKey = GlobalKey();
   double _containerHeight = 0;
 
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
+      double newHeight = renderBox.size.height;
+      if (newHeight != _containerHeight) {
+        _containerHeight = newHeight;
+        print("_containerHeight Height: ${_containerHeight}");
+      }
+    });
+  }
+
   double _getContainerHeight() {
-    final RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
+    RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
     double newHeight = renderBox.size.height;
-    if (newHeight != _containerHeight) {
-      _containerHeight = newHeight;
-      print("_containerHeight Height: ${_containerHeight}");
-    }
+    // if (newHeight != _containerHeight) {
+    //   _containerHeight = newHeight;
+      print("_scaffoldHeight Height: ${_containerHeight}");
+    // }
+
+    renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
+    newHeight = renderBox.size.height;
+    print("_containerHeight Height: ${newHeight}");
 
     return _containerHeight;
   }
@@ -26,15 +45,26 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
     print('flutter build');
 
           return Scaffold(
+            key: _scaffoldKey,
             backgroundColor: Colors.red,
             // appBar: AppBar(
             //   title: Text('TextField Example'),
             // ),
             body: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  key: _scaffoldKey,
-              child: TextField(
+                  color: Colors.blue,
+                  key: _containerKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text('Widget 1'),
+                      SizedBox(height: 10),
+                      Text('Widget 2'),
+                      SizedBox(height: 10),
+                      Text('Widget 3'),
+               TextField(
                   // key: _scaffoldKey,
                   // expands: true,
                   maxLines: 150,
@@ -59,6 +89,8 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
                     ),
                   ),
                 ),
+                  ],
+                  ),
                 ),
               ],
             ),

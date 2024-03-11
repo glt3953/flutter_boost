@@ -43,7 +43,7 @@
 
     CGFloat originX = 20;
     CGFloat originY = 20 + 44 + 40;
-    CGFloat flutterContainerHeight = 80;
+    CGFloat flutterContainerHeight = 280;
     CGFloat spaceY = 20;
 //    CGFloat height = self.view.bounds.size.height - originY - flutterContainerHeight;
 //    _baichuanWebView = [[WKWebView alloc] initWithFrame:CGRectMake(originX, originY, width, height)];
@@ -89,7 +89,7 @@
         make.bottom.equalTo(self.view.mas_bottom).with.offset(-spaceY);
         make.right.mas_equalTo(self.view.mas_right).with.offset(-originX);
 //        make.height.mas_greaterThanOrEqualTo(flutterContainerHeight);
-        make.height.mas_equalTo(80);
+        make.height.mas_equalTo(flutterContainerHeight);
     }];
     [self.flutterContainer.view mas_updateConstraints:^(MASConstraintMaker *make) {
 //        make.top.mas_equalTo(self.view.mas_bottom).with.offset(-(flutterContainerHeight+spaceY));
