@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ShowDialogDemo extends StatefulWidget {
   @override
@@ -11,32 +12,29 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
   final GlobalKey _scaffoldKey = GlobalKey();
   final GlobalKey _containerKey = GlobalKey();
   double _containerHeight = 0;
+  MethodChannel _channel = MethodChannel('container_height_channel');
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
-      double newHeight = renderBox.size.height;
-      if (newHeight != _containerHeight) {
-        _containerHeight = newHeight;
-        print("_containerHeight Height: ${_containerHeight}");
-      }
+      _getContainerHeight();
     });
   }
 
   double _getContainerHeight() {
-    RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
-    double newHeight = renderBox.size.height;
-    // if (newHeight != _containerHeight) {
-    //   _containerHeight = newHeight;
-      print("_scaffoldHeight Height: ${_containerHeight}");
-    // }
+    // RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
+    // double newHeight = renderBox.size.height;
+    // print("_scaffoldHeight Height: ${_containerHeight}");
 
-    renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
-    newHeight = renderBox.size.height;
-    print("_containerHeight Height: ${newHeight}");
+    final RenderBox renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
+    double newHeight = renderBox.size.height;
+    if (newHeight != _containerHeight) {
+      _containerHeight = newHeight;
+      _channel.invokeMethod('updateHeight', {'height': newHeight});
+      print("_containerHeight Height: ${newHeight}");
+    }
 
     return _containerHeight;
   }
@@ -44,7 +42,7 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
   Widget build(BuildContext context) {
     print('flutter build');
 
-          return Scaffold(
+    return Scaffold(
             key: _scaffoldKey,
             backgroundColor: Colors.red,
             // appBar: AppBar(

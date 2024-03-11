@@ -43,8 +43,8 @@
 
     CGFloat originX = 20;
     CGFloat originY = 20 + 44 + 40;
-    CGFloat flutterContainerHeight = 280;
-    CGFloat spaceY = 20;
+    CGFloat flutterContainerHeight = 128;
+    CGFloat spaceY = 0;
 //    CGFloat height = self.view.bounds.size.height - originY - flutterContainerHeight;
 //    _baichuanWebView = [[WKWebView alloc] initWithFrame:CGRectMake(originX, originY, width, height)];
     _baichuanWebView = [[WKWebView alloc] init];
@@ -78,25 +78,34 @@
 //    }];
     
     _flutterContainerViewOriginY = self.view.frame.size.height - spaceY - flutterContainerHeight;
-//    self.flutterContainer.view.frame = CGRectMake(originX, _flutterContainerViewOriginY, width, height);
+    CGFloat width = CGRectGetWidth(self.view.bounds) - 2 * originX;
+    self.flutterContainer.view.frame = CGRectMake(originX, _flutterContainerViewOriginY, width, flutterContainerHeight);
     [self.view addSubview:self.flutterContainer.view];
 //    [self.flutterContainer.view setBackgroundColor:[UIColor blueColor]];
     [self addChildViewController:self.flutterContainer];
-    [self.flutterContainer.view mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(_baichuanWebView.mas_bottom);
-        make.top.mas_equalTo(self.view.mas_bottom).with.offset(-(flutterContainerHeight+spaceY));
-        make.left.mas_equalTo(self.view.mas_left).with.offset(originX);
-        make.bottom.equalTo(self.view.mas_bottom).with.offset(-spaceY);
-        make.right.mas_equalTo(self.view.mas_right).with.offset(-originX);
-//        make.height.mas_greaterThanOrEqualTo(flutterContainerHeight);
-        make.height.mas_equalTo(flutterContainerHeight);
-    }];
-    [self.flutterContainer.view mas_updateConstraints:^(MASConstraintMaker *make) {
+//    [self.flutterContainer.view mas_makeConstraints:^(MASConstraintMaker *make) {
+////        make.top.mas_equalTo(_baichuanWebView.mas_bottom);
 //        make.top.mas_equalTo(self.view.mas_bottom).with.offset(-(flutterContainerHeight+spaceY));
-//        make.top.mas_lessThanOrEqualTo(800);
-//        make.bottom.mas_lessThanOrEqualTo(0);
-        make.height.mas_greaterThanOrEqualTo(flutterContainerHeight);
-    }];
+//        make.left.mas_equalTo(self.view.mas_left).with.offset(originX);
+//        make.bottom.equalTo(self.view.mas_bottom).with.offset(-spaceY);
+//        make.right.mas_equalTo(self.view.mas_right).with.offset(-originX);
+////        make.height.mas_greaterThanOrEqualTo(flutterContainerHeight);
+//        make.height.mas_equalTo(flutterContainerHeight);
+//    }];
+//    [self.flutterContainer.view mas_updateConstraints:^(MASConstraintMaker *make) {
+////        make.top.mas_equalTo(self.view.mas_bottom).with.offset(-(flutterContainerHeight+spaceY));
+//        make.top.mas_lessThanOrEqualTo(100);
+////        make.bottom.mas_lessThanOrEqualTo(0);
+////        make.height.mas_greaterThanOrEqualTo(flutterContainerHeight);
+//    }];
+    
+    FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"container_height_channel" binaryMessenger:self.flutterContainer.binaryMessenger];
+        [channel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
+            if ([call.method isEqualToString:@"updateHeight"]) {
+                CGFloat height = [call.arguments[@"height"] floatValue];
+                [self updateFlutterContainerHeight:height];
+            }
+        }];
     
     // 注册键盘通知
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -108,6 +117,22 @@
                                                  selector:@selector(keyboardWillHide:)
                                                      name:UIKeyboardWillHideNotification
                                                    object:nil];
+}
+
+- (void)updateFlutterContainerHeight:(CGFloat)height {
+    // Update the height of the Flutter Container here
+    // You can adjust the height of the Flutter Container based on the received height
+    CGRect frame = self.flutterContainer.view.frame;
+    NSLog(@"start updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
+    CGFloat spaceY = height - frame.size.height;
+    frame.origin.y -= spaceY;
+    frame.size.height += spaceY;
+    NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
+    [self.flutterContainer.view setFrame:frame];
+//    [self.flutterContainer.view mas_updateConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_lessThanOrEqualTo(100);
+//        make.height.mas_equalTo(height);
+//    }];
 }
 
 - (void)pushMe
