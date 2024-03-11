@@ -10,6 +10,7 @@
 #import <Flutter/Flutter.h>
 #import <flutter_boost/FlutterBoost.h>
 #import <WebKit/Webkit.h>
+#import "Masonry.h"
 
 @interface NativeViewController ()
 @property (nonatomic, strong) FBFlutterViewContainer *flutterContainer;
@@ -31,13 +32,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor grayColor];
+//    
+//    [NSTimer scheduledTimerWithTimeInterval:5 repeats:YES block:^(NSTimer * _Nonnull timer) {
+//        NSLog(@"Timer run");
+//        CGRect frame = self.flutterContainer.view.frame;
+//        frame.size.height += 10;
+//        [self.flutterContainer.view setFrame:frame];
+//        
+//    }];
 
     CGFloat originX = 20;
     CGFloat originY = 20 + 44 + 40;
-    CGFloat width = self.view.bounds.size.width - 2 * originX;
     CGFloat flutterContainerHeight = 80;
-    CGFloat height = self.view.bounds.size.height - originY - flutterContainerHeight;
-    _baichuanWebView = [[WKWebView alloc] initWithFrame:CGRectMake(originX, originY, width, height)];
+    CGFloat spaceY = 20;
+//    CGFloat height = self.view.bounds.size.height - originY - flutterContainerHeight;
+//    _baichuanWebView = [[WKWebView alloc] initWithFrame:CGRectMake(originX, originY, width, height)];
+    _baichuanWebView = [[WKWebView alloc] init];
     _baichuanWebView.inspectable = YES;
     // 设置 Cookie
     NSURL *url = [NSURL URLWithString:@"https://baiying-test.baichuan-ai.com"];
@@ -54,12 +64,39 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:url]; //https://baiying-test.baichuan-ai.com，https://www.baidu.com
     [_baichuanWebView loadRequest:request];
     [self.view addSubview:_baichuanWebView];
+//    UIEdgeInsets padding = UIEdgeInsetsMake(20 + 44 + 40, 20, 10, 20);
+    [_baichuanWebView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).with.offset(originY);
+        make.left.equalTo(self.view.mas_left).with.offset(originX);
+        make.bottom.equalTo(self.view.mas_bottom).with.offset(-flutterContainerHeight);
+        make.right.equalTo(self.view.mas_right).with.offset(-originX);
+    }];
+    // 根据_flutterContainer.view的高度调整_baichuanWebView的高度
+//    [_baichuanWebView mas_updateConstraints:^(MASConstraintMaker *make) {
+//        make.bottom.equalTo(self.flutterContainer.view.mas_top);
+////        make.height.mas_equalTo(newHeight); // 根据_flutterContainer.view的高度调整_baichuanWebView的高度
+//    }];
     
-    _flutterContainerViewOriginY = originY + height + 10;
-    height = flutterContainerHeight - 20;
-    self.flutterContainer.view.frame = CGRectMake(originX, _flutterContainerViewOriginY, width, height);
+    _flutterContainerViewOriginY = self.view.frame.size.height - spaceY - flutterContainerHeight;
+//    self.flutterContainer.view.frame = CGRectMake(originX, _flutterContainerViewOriginY, width, height);
     [self.view addSubview:self.flutterContainer.view];
+//    [self.flutterContainer.view setBackgroundColor:[UIColor blueColor]];
     [self addChildViewController:self.flutterContainer];
+    [self.flutterContainer.view mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(_baichuanWebView.mas_bottom);
+        make.top.mas_equalTo(self.view.mas_bottom).with.offset(-(flutterContainerHeight+spaceY));
+        make.left.mas_equalTo(self.view.mas_left).with.offset(originX);
+        make.bottom.equalTo(self.view.mas_bottom).with.offset(-spaceY);
+        make.right.mas_equalTo(self.view.mas_right).with.offset(-originX);
+//        make.height.mas_greaterThanOrEqualTo(flutterContainerHeight);
+        make.height.mas_equalTo(80);
+    }];
+    [self.flutterContainer.view mas_updateConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(self.view.mas_bottom).with.offset(-(flutterContainerHeight+spaceY));
+//        make.top.mas_lessThanOrEqualTo(800);
+//        make.bottom.mas_lessThanOrEqualTo(0);
+        make.height.mas_greaterThanOrEqualTo(flutterContainerHeight);
+    }];
     
     // 注册键盘通知
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -82,8 +119,8 @@
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     //注意这行代码不可缺少
-//    [self.flutterContainer.view setNeedsLayout];
-//    [self.flutterContainer.view layoutIfNeeded];
+    [self.flutterContainer.view setNeedsLayout];
+    [self.flutterContainer.view layoutIfNeeded];
 }
 
 //NOTES: embed情景下必须实现！！！
@@ -115,9 +152,10 @@
     
     CGRect frame = self.flutterContainer.view.frame;
     frame.origin.y = _flutterContainerViewOriginY - keyboardHeight;
+//    frame.origin.y -= keyboardHeight;
     [self.flutterContainer.view setFrame:frame];
     
-    NSLog(@"Keyboard will show. Height: %f", keyboardHeight);
+//    NSLog(@"Keyboard will show. Height: %f", keyboardHeight);
     // 在这里可以对键盘弹起进行处理，比如调整界面布局
 }
 
@@ -126,7 +164,7 @@
     frame.origin.y = _flutterContainerViewOriginY;
     [self.flutterContainer.view setFrame:frame];
     
-    NSLog(@"Keyboard will hide.");
+//    NSLog(@"Keyboard will hide.");
     // 在这里可以对键盘隐藏进行处理
 }
 
