@@ -13,9 +13,12 @@
 #import "Masonry.h"
 
 @interface NativeViewController ()
+
 @property (nonatomic, strong) FBFlutterViewContainer *flutterContainer;
 @property (nonatomic, strong) WKWebView *baichuanWebView;
 @property (nonatomic) CGFloat flutterContainerViewOriginY;
+@property (nonatomic) CGFloat keyboardHeight;
+
 @end
 
 @implementation NativeViewController
@@ -44,7 +47,7 @@
     CGFloat originX = 20;
     CGFloat originY = 20 + 44 + 40;
     CGFloat flutterContainerHeight = 128;
-    CGFloat spaceY = 0;
+    CGFloat spaceY = 20;
 //    CGFloat height = self.view.bounds.size.height - originY - flutterContainerHeight;
 //    _baichuanWebView = [[WKWebView alloc] initWithFrame:CGRectMake(originX, originY, width, height)];
     _baichuanWebView = [[WKWebView alloc] init];
@@ -173,11 +176,10 @@
 - (void)keyboardWillShow:(NSNotification *)notification {
     NSDictionary *info = [notification userInfo];
     CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    CGFloat keyboardHeight = keyboardSize.height;
+    _keyboardHeight = keyboardSize.height;
     
     CGRect frame = self.flutterContainer.view.frame;
-    frame.origin.y = _flutterContainerViewOriginY - keyboardHeight;
-//    frame.origin.y -= keyboardHeight;
+    frame.origin.y -= _keyboardHeight;
     [self.flutterContainer.view setFrame:frame];
     
 //    NSLog(@"Keyboard will show. Height: %f", keyboardHeight);
@@ -186,7 +188,7 @@
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     CGRect frame = self.flutterContainer.view.frame;
-    frame.origin.y = _flutterContainerViewOriginY;
+    frame.origin.y += _keyboardHeight;
     [self.flutterContainer.view setFrame:frame];
     
 //    NSLog(@"Keyboard will hide.");

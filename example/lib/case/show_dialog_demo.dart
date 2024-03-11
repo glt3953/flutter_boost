@@ -18,32 +18,30 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getContainerHeight();
-    });
+    // _getContainerHeight();
   }
 
-  double _getContainerHeight() {
-    // RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
-    // double newHeight = renderBox.size.height;
-    // print("_scaffoldHeight Height: ${_containerHeight}");
+  void _getContainerHeight() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
+      // double newHeight = renderBox.size.height;
+      // print("_scaffoldHeight Height: ${_containerHeight}");
 
-    final RenderBox renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
-    double newHeight = renderBox.size.height;
-    if (newHeight != _containerHeight) {
-      _containerHeight = newHeight;
-      _channel.invokeMethod('updateHeight', {'height': newHeight});
-      print("_containerHeight Height: ${newHeight}");
-    }
-
-    return _containerHeight;
+      final RenderBox renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
+      double newHeight = renderBox.size.height;
+      if (newHeight != _containerHeight) {
+        _containerHeight = newHeight;
+        _channel.invokeMethod('updateHeight', {'height': newHeight});
+        print("updateFlutterContainerHeight Height: ${newHeight}");
+      }
+    });
   }
 
   Widget build(BuildContext context) {
     print('flutter build');
 
     return Scaffold(
-            key: _scaffoldKey,
+            // key: _scaffoldKey,
             backgroundColor: Colors.red,
             // appBar: AppBar(
             //   title: Text('TextField Example'),
