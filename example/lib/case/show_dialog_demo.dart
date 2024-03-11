@@ -7,9 +7,8 @@ class ShowDialogDemo extends StatefulWidget {
   State<ShowDialogDemo> createState() => _ShowDialogDemoState();
 }
 
-class _ShowDialogDemoState extends State<ShowDialogDemo> {
+class _ShowDialogDemoState extends State<ShowDialogDemo> with WidgetsBindingObserver {
   @override
-  final GlobalKey _scaffoldKey = GlobalKey();
   final GlobalKey _containerKey = GlobalKey();
   double _containerHeight = 0;
   MethodChannel _channel = MethodChannel('container_height_channel');
@@ -18,26 +17,28 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
   void initState() {
     super.initState();
 
-    // _getContainerHeight();
+    WidgetsBinding.instance.addPostFrameCallback(callback);
   }
 
-  void _getContainerHeight() {
-    final callback = (_) {
-      // RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
-      // double newHeight = renderBox.size.height;
-      // print("_scaffoldHeight Height: ${_containerHeight}");
+  @override
+  void dispose() {
+    super.dispose();
 
-      final RenderBox renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
-      double newHeight = renderBox.size.height;
-      if (newHeight != _containerHeight) {
-        _containerHeight = newHeight;
-        _channel.invokeMethod('updateHeight', {'height': newHeight});
-        print("updateFlutterContainerHeight Height: ${newHeight}");
-      }
+    // 在组件销毁时移除回调
+    WidgetsBinding.instance.removeObserver(this);
+  }
 
-      // WidgetsBinding.instance.addPostFrameCallback(callback);
-    };
-    WidgetsBinding.instance.addPostFrameCallback(callback);
+  void callback(Duration timeStamp) {
+    final RenderBox renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
+    double newHeight = renderBox.size.height;
+    if (newHeight != _containerHeight) {
+      _containerHeight = newHeight;
+      // 假设 _channel 已经定义
+      _channel.invokeMethod('updateHeight', {'height': newHeight});
+      print("updateFlutterContainerHeight Height: ${newHeight}");
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback(callback); // 重新注册回调
   }
 
   Widget build(BuildContext context) {
@@ -68,9 +69,6 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
                   // expands: true,
                   maxLines: 150,
                   minLines: 1,
-                  onChanged: (text) {
-                    _getContainerHeight();
-                  },
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFFF6F8FB),
