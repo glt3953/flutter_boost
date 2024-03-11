@@ -22,7 +22,7 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
   }
 
   void _getContainerHeight() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    final callback = (_) {
       // RenderBox renderBox = _scaffoldKey.currentContext?.findRenderObject() as RenderBox;
       // double newHeight = renderBox.size.height;
       // print("_scaffoldHeight Height: ${_containerHeight}");
@@ -34,7 +34,10 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
         _channel.invokeMethod('updateHeight', {'height': newHeight});
         print("updateFlutterContainerHeight Height: ${newHeight}");
       }
-    });
+
+      // WidgetsBinding.instance.addPostFrameCallback(callback);
+    };
+    WidgetsBinding.instance.addPostFrameCallback(callback);
   }
 
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> {
 
     return Scaffold(
             // key: _scaffoldKey,
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.transparent,
             // appBar: AppBar(
             //   title: Text('TextField Example'),
             // ),

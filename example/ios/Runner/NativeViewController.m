@@ -120,6 +120,7 @@
                                                  selector:@selector(keyboardWillHide:)
                                                      name:UIKeyboardWillHideNotification
                                                    object:nil];
+    NSLog(@"注册键盘通知 updateFlutterContainerHeight");
 }
 
 - (void)updateFlutterContainerHeight:(CGFloat)height {
@@ -129,6 +130,7 @@
     NSLog(@"start updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
     CGFloat spaceY = height - frame.size.height;
     frame.origin.y -= spaceY;
+    _flutterContainerViewOriginY = frame.origin.y;
     frame.size.height += spaceY;
     NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
     [self.flutterContainer.view setFrame:frame];
@@ -157,15 +159,15 @@
     [super didMoveToParentViewController:parent];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)showLog:(NSString *)log {
+    // 格式化当前时间
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
+    NSString *currentTimeString = [dateFormatter stringFromDate:[NSDate date]];
+    
+    // 打印时间戳和执行时间
+    NSLog(@"[%@] %@", currentTimeString, log);
 }
-*/
 
 - (void)dealloc{
     NSLog(@"dealloc native controller%p", self.flutterContainer);
@@ -177,22 +179,21 @@
     NSDictionary *info = [notification userInfo];
     CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     _keyboardHeight = keyboardSize.height;
-    
+        
     CGRect frame = self.flutterContainer.view.frame;
-    frame.origin.y -= _keyboardHeight;
+    [self showLog:[NSString stringWithFormat:@"keyboardWillShow start updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height]];
+    frame.origin.y = _flutterContainerViewOriginY - _keyboardHeight;
     [self.flutterContainer.view setFrame:frame];
-    
-//    NSLog(@"Keyboard will show. Height: %f", keyboardHeight);
-    // 在这里可以对键盘弹起进行处理，比如调整界面布局
+    [self showLog:[NSString stringWithFormat:@"keyboardWillShow end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height]];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     CGRect frame = self.flutterContainer.view.frame;
+    [self showLog:[NSString stringWithFormat:@"keyboardWillHide start updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height]];
     frame.origin.y += _keyboardHeight;
+    _flutterContainerViewOriginY = frame.origin.y;
     [self.flutterContainer.view setFrame:frame];
-    
-//    NSLog(@"Keyboard will hide.");
-    // 在这里可以对键盘隐藏进行处理
+    [self showLog:[NSString stringWithFormat:@"keyboardWillHide end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height]];
 }
 
 @end
