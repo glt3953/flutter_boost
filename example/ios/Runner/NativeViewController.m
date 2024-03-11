@@ -184,6 +184,11 @@
     CGRect frame = self.flutterContainer.view.frame;
     [self showLog:[NSString stringWithFormat:@"keyboardWillShow start updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height]];
     frame.origin.y = _flutterContainerViewOriginY - _keyboardHeight;
+    
+    if (frame.origin.y < 0) {
+        return;
+    }
+    
     [self.flutterContainer.view setFrame:frame];
     [self showLog:[NSString stringWithFormat:@"keyboardWillShow end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height]];
 }
