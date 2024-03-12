@@ -56,37 +56,40 @@ class _ShowDialogDemoState extends State<ShowDialogDemo> with WidgetsBindingObse
                 Container(
                   color: Colors.blue,
                   key: _containerKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text('Widget 1'),
-                      SizedBox(height: 10),
-                      Text('Widget 2'),
-                      SizedBox(height: 10),
-                      Text('Widget 3'),
-               TextField(
-                  // key: _scaffoldKey,
-                  // expands: true,
-                  maxLines: 150,
-                  minLines: 1,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFFF6F8FB),
-                    hintText: 'Flutter TextField',
-                    hintStyle: const TextStyle(
-                        fontSize: 16, color: Color(0x998588A9)),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    contentPadding:
-                    //     EdgeInsets.all(20),
-                    // isCollapsed: true,
-                    const EdgeInsets.fromLTRB(16, 6, 1, 6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                  ),
-                ),
-                  ],
+                  child: Align(
+                    alignment: Alignment.bottomCenter, //Align的alignment为垂直居底显示
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('Widget 1'),
+                          SizedBox(height: 10),
+                          Text('Widget 2'),
+                          SizedBox(height: 10),
+                          Text('Widget 3'),
+                         TextField(
+                            // key: _scaffoldKey,
+                            // expands: true,
+                            maxLines: 150,
+                            minLines: 1,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: const Color(0xFFF6F8FB),
+                              hintText: 'Flutter TextField',
+                              hintStyle: const TextStyle(
+                                  fontSize: 16, color: Color(0x998588A9)),
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
+                              contentPadding:
+                              //     EdgeInsets.all(20),
+                              // isCollapsed: true,
+                              const EdgeInsets.fromLTRB(16, 6, 1, 6),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                   ),
                 ),
               ],

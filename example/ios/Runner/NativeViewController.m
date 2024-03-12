@@ -130,15 +130,15 @@
     frame.origin.y -= spaceY;
     _flutterContainerViewOriginY = frame.origin.y;
     frame.size.height += spaceY;
-//    [self.flutterContainer.view setFrame:frame];
-//    NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
-    [UIView animateWithDuration:0.15 animations:^{
-        // 在动画块中更新视图的 frame 属性
-        self.flutterContainer.view.frame = frame;
-    } completion:^(BOOL finished) {
-        // 动画完成时可以执行一些操作
-        NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
-    }];
+    [self.flutterContainer.view setFrame:frame];
+    NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
+//    [UIView animateWithDuration:0.064 animations:^{
+//        // 在动画块中更新视图的 frame 属性
+//        self.flutterContainer.view.frame = frame;
+//    } completion:^(BOOL finished) {
+//        // 动画完成时可以执行一些操作
+//        NSLog(@"end updateFlutterContainerHeight frame.origin.y:%f, frame.size.height:%f", frame.origin.y, frame.size.height);
+//    }];
 }
 
 - (void)pushMe
