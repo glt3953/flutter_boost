@@ -23,6 +23,12 @@ dependencies:
   video_player: ^2.4.6
   webview_flutter: ^3.0.4
   dual_screen: ^1.0.3
+  # webview组件
+  flutter_inappwebview:
+    git:
+      url: ssh://git@code.baichuan-inc.com:2224/baichuan-fe/open-source-fork/flutter_inappwebview.git
+      ref: v6.0.0_bc
+      path: flutter_inappwebview
 
 dev_dependencies:
   flutter_test:
